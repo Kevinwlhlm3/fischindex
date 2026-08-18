@@ -42,7 +42,23 @@
     min-height:100vh;
     overscroll-behavior-y: none;
   }
-  .app{ max-width:480px; margin:0 auto; min-height:100vh; position:relative; padding-bottom:100px; }
+  .app{ max-width:480px; margin:0 auto; min-height:100vh; position:relative; padding-bottom:150px; }
+
+  /* ---------- bottom nav ---------- */
+  .bottom-nav{
+    position:fixed; left:0; right:0; bottom:0; max-width:480px; margin:0 auto; z-index:30;
+    background:rgba(12,44,45,0.92); backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);
+    display:flex; padding:8px 12px calc(8px + env(safe-area-inset-bottom));
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  }
+  .nav-item{
+    flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:3px;
+    padding:8px 0 4px; color:rgba(244,238,221,0.5); cursor:pointer;
+  }
+  .nav-item svg{ width:21px; height:21px; }
+  .nav-item span{ font-size:11px; font-weight:600; }
+  .nav-item.active{ color:var(--amber); }
 
   /* ---------- contour watermark ---------- */
   .contours{
@@ -133,7 +149,7 @@
 
   /* ---------- fab ---------- */
   .fab{
-    position:fixed; bottom:26px; left:50%; transform:translateX(-50%);
+    position:fixed; bottom:86px; left:50%; transform:translateX(-50%);
     max-width:480px; width:calc(100% - 44px);
     background:var(--amber); color:#2B1D02; border:none; border-radius:999px;
     padding:16px 20px; font-family:'Inter',sans-serif; font-weight:700; font-size:15px;
@@ -248,35 +264,90 @@
     </svg>
   </div>
 
-  <header>
-    <p class="eyebrow">Fischindex · Feldjournal</p>
-    <h1>Was schwimmt<br/>dir vors Netz?</h1>
-    <p class="sub">Jede Art, die du fängst, kommt in den Katalog — mit deinem persönlichen Bestwert.</p>
+  <div id="viewIndex">
+    <header>
+      <p class="eyebrow">Fischindex · Feldjournal</p>
+      <h1>Was schwimmt<br/>dir vors Netz?</h1>
+      <p class="sub">Jede Art, die du fängst, kommt in den Katalog — mit deinem persönlichen Bestwert.</p>
 
-    <div class="progress-card">
-      <div class="progress-ring">
-        <svg width="58" height="58" viewBox="0 0 58 58">
-          <circle cx="29" cy="29" r="24" fill="none" stroke="rgba(244,238,221,0.15)" stroke-width="6"/>
-          <circle id="ringFg" cx="29" cy="29" r="24" fill="none" stroke="#D79B2C" stroke-width="6"
-                  stroke-linecap="round" stroke-dasharray="150.8" stroke-dashoffset="150.8"/>
-        </svg>
-        <div class="num" id="ringNum">0/24</div>
+      <div class="progress-card">
+        <div class="progress-ring">
+          <svg width="58" height="58" viewBox="0 0 58 58">
+            <circle cx="29" cy="29" r="24" fill="none" stroke="rgba(244,238,221,0.15)" stroke-width="6"/>
+            <circle id="ringFg" cx="29" cy="29" r="24" fill="none" stroke="#D79B2C" stroke-width="6"
+                    stroke-linecap="round" stroke-dasharray="150.8" stroke-dashoffset="150.8"/>
+          </svg>
+          <div class="num" id="ringNum">0/24</div>
+        </div>
+        <div class="progress-text">
+          <p class="label">Entdeckte Arten</p>
+          <p class="value" id="progressLine">Noch nichts geloggt — leg los!</p>
+        </div>
       </div>
-      <div class="progress-text">
-        <p class="label">Entdeckte Arten</p>
-        <p class="value" id="progressLine">Noch nichts geloggt — leg los!</p>
+    </header>
+
+    <div class="tabs" id="tabs"></div>
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div id="viewProfil" style="display:none;">
+    <header>
+      <p class="eyebrow">Fischindex · Feldjournal</p>
+      <h1>Dein Profil</h1>
+      <p class="sub">Wer du bist und was du bisher gefangen hast.</p>
+    </header>
+
+    <div style="position:relative; z-index:1; padding:4px 22px 20px;">
+
+      <div class="progress-card" style="flex-direction:column; align-items:stretch; gap:14px;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div id="avatarInitial" style="width:52px; height:52px; border-radius:50%; background:var(--amber); color:#2B1D02; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:20px; flex-shrink:0;">?</div>
+          <div style="flex:1;">
+            <label style="margin:0 0 4px;">Name</label>
+            <input id="profileName" type="text" placeholder="Dein Name" style="background:rgba(244,238,221,0.08); border:1px solid var(--line); color:var(--surface); padding:9px 11px;" />
+          </div>
+        </div>
+        <p style="font-size:11.5px; color:rgba(244,238,221,0.5); margin:0;" id="memberSince">Mitglied seit heute</p>
       </div>
+
+      <p class="eyebrow" style="margin:22px 0 8px;">Statistik</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="progress-card" style="flex-direction:column; align-items:flex-start; gap:2px; padding:14px 16px;">
+          <p class="value" id="statTotal" style="font-size:22px;">0</p>
+          <p class="label" style="margin:0;">Fänge gesamt</p>
+        </div>
+        <div class="progress-card" style="flex-direction:column; align-items:flex-start; gap:2px; padding:14px 16px;">
+          <p class="value" id="statSpecies" style="font-size:22px;">0/24</p>
+          <p class="label" style="margin:0;">Arten entdeckt</p>
+        </div>
+      </div>
+
+      <p class="eyebrow" style="margin:22px 0 8px;">Auszeichnungen</p>
+      <div class="progress-card" style="justify-content:center;">
+        <p style="font-size:13px; color:rgba(244,238,221,0.55); margin:0; text-align:center;">Bald verfügbar — Abzeichen für besondere Fänge und Meilensteine.</p>
+      </div>
+
     </div>
-  </header>
+  </div>
 
-  <div class="tabs" id="tabs"></div>
-  <div class="grid" id="grid"></div>
 </div>
+
+<nav class="bottom-nav" id="bottomNav">
+  <button class="nav-item active" data-view="index">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    <span>Index</span>
+  </button>
+  <button class="nav-item" data-view="profil">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+    <span>Profil</span>
+  </button>
+</nav>
 
 <button class="fab" id="openAdd">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
   Fang eintragen
 </button>
+
 
 <div class="sheet-backdrop" id="backdrop"></div>
 
@@ -540,6 +611,44 @@ function openDetail(speciesId){
 /* ---------------- init ---------------- */
 renderTabs();
 renderGrid();
+
+/* ---------------- profile ---------------- */
+const PROFILE_KEY = "fischindex_profile_v1";
+let profile = {};
+try { profile = JSON.parse(localStorage.getItem(PROFILE_KEY)) || {}; } catch(e){ profile = {}; }
+if(!profile.since) profile.since = new Date().toISOString();
+localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+
+function renderProfile(){
+  const nameInput = document.getElementById('profileName');
+  nameInput.value = profile.name || '';
+  document.getElementById('avatarInitial').textContent = (profile.name || '?').trim().charAt(0).toUpperCase() || '?';
+  document.getElementById('memberSince').textContent = 'Mitglied seit ' + fmtDate(profile.since);
+  document.getElementById('statTotal').textContent = catches.length;
+  document.getElementById('statSpecies').textContent = `${SPECIES.filter(s=>pbFor(s.id)).length}/${SPECIES.length}`;
+}
+document.getElementById('profileName').addEventListener('input', (e)=>{
+  profile.name = e.target.value;
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+  document.getElementById('avatarInitial').textContent = (profile.name || '?').trim().charAt(0).toUpperCase() || '?';
+});
+
+/* ---------------- view switching ---------------- */
+const viewIndex = document.getElementById('viewIndex');
+const viewProfil = document.getElementById('viewProfil');
+const fab = document.getElementById('openAdd');
+document.querySelectorAll('.nav-item').forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const v = btn.dataset.view;
+    viewIndex.style.display = v === 'index' ? '' : 'none';
+    viewProfil.style.display = v === 'profil' ? '' : 'none';
+    fab.style.display = v === 'index' ? '' : 'none';
+    if(v === 'profil') renderProfile();
+    window.scrollTo(0,0);
+  };
+});
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{
