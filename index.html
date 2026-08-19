@@ -66,6 +66,23 @@
   }
   .type-opt.active{ background:var(--amber); border-color:var(--amber); color:#2B1D02; font-weight:700; }
 
+  .candidate{
+    display:flex; align-items:center; gap:12px; background:var(--surface); color:var(--ink);
+    border-radius:var(--radius-md); padding:12px 13px; margin-bottom:9px; cursor:pointer;
+    border:1.5px solid transparent; transition:border-color .15s ease;
+  }
+  .candidate:active{ border-color:var(--amber); }
+  .candidate .glyph-sm{
+    width:38px; height:38px; border-radius:10px; background:var(--surface-dim); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .candidate .glyph-sm svg{ width:60%; height:60%; }
+  .candidate .info{ flex:1; min-width:0; }
+  .candidate .info .n{ font-family:'Fraunces',serif; font-weight:600; font-size:14px; margin:0 0 5px; }
+  .candidate .bar-bg{ height:5px; background:rgba(0,0,0,0.08); border-radius:99px; overflow:hidden; }
+  .candidate .bar-fg{ height:100%; background:var(--teal); border-radius:99px; }
+  .candidate .pct{ font-family:'Space Mono',monospace; font-size:13px; font-weight:700; flex-shrink:0; }
+
   /* ---------- contour watermark ---------- */
   .contours{
     position:absolute; top:0; left:0; right:0; height:340px; overflow:hidden; z-index:0; pointer-events:none;
@@ -344,12 +361,55 @@
     </div>
   </div>
 
+  <div id="viewScan" style="display:none;">
+    <header>
+      <p class="eyebrow">Fischindex · Feldjournal</p>
+      <h1>Fisch erkennen</h1>
+      <p class="sub">Foto machen, Art vorschlagen lassen, direkt in den Index übernehmen.</p>
+    </header>
+
+    <div style="position:relative; z-index:1; padding:4px 22px 20px;">
+
+      <div id="scanIdle">
+        <label for="scanInput" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; border:1.5px dashed var(--line); border-radius:var(--radius-lg); padding:38px 20px; cursor:pointer; background:rgba(244,238,221,0.04);">
+          <div style="width:52px; height:52px; border-radius:50%; background:var(--teal-soft); display:flex; align-items:center; justify-content:center;">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#F4EEDD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M20 8V6a2 2 0 0 0-2-2h-2M4 16v2a2 2 0 0 0 2 2h2M20 16v2a2 2 0 0 1-2 2h-2"/><circle cx="12" cy="12" r="3.4"/></svg>
+          </div>
+          <p style="font-size:14px; font-weight:600; margin:0;">Foto aufnehmen oder auswählen</p>
+          <p style="font-size:12px; color:rgba(244,238,221,0.5); margin:0;">Am besten den ganzen Fisch von der Seite</p>
+        </label>
+        <input id="scanInput" type="file" accept="image/*" capture="environment" style="display:none;" />
+        <p style="font-size:11px; color:rgba(244,238,221,0.4); margin:14px 2px 0; text-align:center;">Prototyp-Hinweis: Die Erkennung ist hier simuliert, um den Ablauf zu testen — keine echte KI-Analyse.</p>
+      </div>
+
+      <div id="scanLoading" style="display:none; flex-direction:column; align-items:center; padding:30px 0;">
+        <img id="scanPreviewLoading" style="width:160px; height:160px; object-fit:cover; border-radius:var(--radius-lg); margin-bottom:16px;" />
+        <p style="font-size:13.5px; color:rgba(244,238,221,0.7); margin:0;" id="scanLoadingText">Analysiere Foto…</p>
+      </div>
+
+      <div id="scanResult" style="display:none;">
+        <div style="display:flex; justify-content:center; margin-bottom:16px;">
+          <img id="scanPreviewResult" style="width:130px; height:130px; object-fit:cover; border-radius:var(--radius-lg);" />
+        </div>
+        <p class="eyebrow" style="margin:0 0 10px;">Mögliche Arten</p>
+        <div id="scanCandidates"></div>
+        <button class="cancel-btn" id="scanManual" style="margin-top:6px;">Kein Treffer dabei? Art manuell wählen</button>
+        <button class="cancel-btn" id="scanRetry">Neues Foto</button>
+      </div>
+
+    </div>
+  </div>
+
 </div>
 
 <nav class="bottom-nav" id="bottomNav">
   <button class="nav-item active" data-view="index">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
     <span>Index</span>
+  </button>
+  <button class="nav-item" data-view="scan">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M20 8V6a2 2 0 0 0-2-2h-2M4 16v2a2 2 0 0 0 2 2h2M20 16v2a2 2 0 0 1-2 2h-2"/><circle cx="12" cy="12" r="3.4"/></svg>
+    <span>Erkennen</span>
   </button>
   <button class="nav-item" data-view="profil">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
@@ -369,6 +429,7 @@
   <div class="sheet-handle"></div>
   <h2>Neuer Fang</h2>
   <p class="sheet-sub">Trag ein, was heute angebissen hat.</p>
+  <img id="scanPhotoPreviewEl" style="display:none; width:100%; max-height:160px; object-fit:cover; border-radius:var(--radius-md); margin-bottom:14px;" />
 
   <label for="fSpecies">Fischart</label>
   <select id="fSpecies"></select>
@@ -594,6 +655,7 @@ const backdrop = document.getElementById('backdrop');
 const addSheet = document.getElementById('addSheet');
 const detailSheet = document.getElementById('detailSheet');
 const fSpecies = document.getElementById('fSpecies');
+const scanPhotoPreviewEl = document.getElementById('scanPhotoPreviewEl');
 fSpecies.innerHTML = SPECIES.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
 
 function setNowDefaults(){
@@ -646,8 +708,17 @@ function closeSheets(){
   detailSheet.classList.remove('open');
 }
 backdrop.onclick = closeSheets;
-document.getElementById('openAdd').onclick = ()=>{ setNowDefaults(); openSheet(addSheet); };
-document.getElementById('cancelAdd').onclick = closeSheets;
+document.getElementById('openAdd').onclick = ()=>{
+  setNowDefaults();
+  pendingPhoto = null;
+  scanPhotoPreviewEl.style.display = 'none';
+  openSheet(addSheet);
+};
+document.getElementById('cancelAdd').onclick = ()=>{
+  pendingPhoto = null;
+  scanPhotoPreviewEl.style.display = 'none';
+  closeSheets();
+};
 document.getElementById('closeDetail').onclick = closeSheets;
 
 function showToast(msg){
@@ -672,7 +743,7 @@ document.getElementById('saveCatch').onclick = ()=>{
   if(water && gNote){ gewaesserNotes[normWater(water)] = gNote; localStorage.setItem(GEWAESSER_KEY, JSON.stringify(gewaesserNotes)); }
 
   const prevPb = pbFor(speciesId);
-  catches.push({ id: Date.now().toString(), speciesId, length, weight, water, date, time, weather: selectedWeather, pressure });
+  catches.push({ id: Date.now().toString(), speciesId, length, weight, water, date, time, weather: selectedWeather, pressure, photo: pendingPhoto || null });
   save();
 
   const sp = SPECIES.find(s=>s.id===speciesId);
@@ -685,6 +756,8 @@ document.getElementById('saveCatch').onclick = ()=>{
   fWater.value = '';
   fGewaesserNote.value = '';
   waterNoteEl.style.display = 'none';
+  pendingPhoto = null;
+  scanPhotoPreviewEl.style.display = 'none';
   document.getElementById('fPressure').value = '';
   selectedWeather = null;
   document.querySelectorAll('.weather-opt').forEach(b=> b.classList.remove('active'));
@@ -720,7 +793,8 @@ function openDetail(speciesId){
     <div class="catch-list">
       ${hist.length ? hist.map(c=>`
         <div class="catch-item">
-          <div>
+          ${c.photo ? `<img src="${c.photo}" style="width:38px; height:38px; object-fit:cover; border-radius:9px; margin-right:10px; flex-shrink:0;" />` : ''}
+          <div style="flex:1; min-width:0;">
             <p class="l">${c.water || 'Unbekanntes Gewässer'}</p>
             <p class="w">${catchMeta(c)}</p>
           </div>
@@ -765,6 +839,7 @@ document.querySelectorAll('.type-opt').forEach(btn=>{
 /* ---------------- view switching ---------------- */
 const viewIndex = document.getElementById('viewIndex');
 const viewProfil = document.getElementById('viewProfil');
+const viewScan = document.getElementById('viewScan');
 const fab = document.getElementById('openAdd');
 document.querySelectorAll('.nav-item').forEach(btn=>{
   btn.onclick = ()=>{
@@ -773,11 +848,105 @@ document.querySelectorAll('.nav-item').forEach(btn=>{
     const v = btn.dataset.view;
     viewIndex.style.display = v === 'index' ? '' : 'none';
     viewProfil.style.display = v === 'profil' ? '' : 'none';
+    viewScan.style.display = v === 'scan' ? '' : 'none';
     fab.style.display = v === 'index' ? '' : 'none';
     if(v === 'profil') renderProfile();
+    if(v === 'scan') resetScan();
     window.scrollTo(0,0);
   };
 });
+
+/* ---------------- AI-Erkennung (simuliert) ---------------- */
+const scanIdle = document.getElementById('scanIdle');
+const scanLoading = document.getElementById('scanLoading');
+const scanResult = document.getElementById('scanResult');
+const scanInput = document.getElementById('scanInput');
+let pendingPhoto = null; // compressed dataURL of the current/last scanned photo
+
+function resetScan(){
+  scanIdle.style.display = '';
+  scanLoading.style.display = 'none';
+  scanResult.style.display = 'none';
+  scanInput.value = '';
+}
+
+function compressImage(file, maxDim, quality){
+  return new Promise((resolve)=>{
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (e)=>{ img.src = e.target.result; };
+    img.onload = ()=>{
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function pickFakeCandidates(){
+  // Simulierte Erkennung: 3 zufällige Arten mit plausiblen, absteigenden Konfidenzwerten.
+  const shuffled = [...SPECIES].sort(()=> Math.random() - 0.5);
+  const picks = shuffled.slice(0, 3);
+  const confidences = [
+    62 + Math.floor(Math.random()*24), // 62–85%
+    8 + Math.floor(Math.random()*14),  // 8–21%
+    3 + Math.floor(Math.random()*8),   // 3–10%
+  ];
+  return picks.map((s,i)=> ({ species: s, confidence: confidences[i] }));
+}
+
+scanInput.addEventListener('change', async ()=>{
+  const file = scanInput.files[0];
+  if(!file) return;
+  pendingPhoto = await compressImage(file, 480, 0.65);
+
+  scanIdle.style.display = 'none';
+  scanLoading.style.display = 'flex';
+  document.getElementById('scanPreviewLoading').src = pendingPhoto;
+
+  setTimeout(()=>{
+    scanLoading.style.display = 'none';
+    scanResult.style.display = 'block';
+    document.getElementById('scanPreviewResult').src = pendingPhoto;
+
+    const candidates = pickFakeCandidates();
+    document.getElementById('scanCandidates').innerHTML = candidates.map(c=> `
+      <div class="candidate" data-species="${c.species.id}">
+        <div class="glyph-sm">${fishSvg(CAT_COLOR[c.species.cat])}</div>
+        <div class="info">
+          <p class="n">${c.species.name}</p>
+          <div class="bar-bg"><div class="bar-fg" style="width:${c.confidence}%"></div></div>
+        </div>
+        <span class="pct">${c.confidence}%</span>
+      </div>
+    `).join('');
+
+    document.querySelectorAll('.candidate').forEach(el=>{
+      el.onclick = ()=>{
+        openAddSheetWithSpecies(el.dataset.species, pendingPhoto);
+      };
+    });
+  }, 1400);
+});
+
+document.getElementById('scanRetry').onclick = resetScan;
+document.getElementById('scanManual').onclick = ()=>{
+  openAddSheetWithSpecies(null, pendingPhoto);
+};
+
+function openAddSheetWithSpecies(speciesId, photo){
+  setNowDefaults();
+  if(speciesId) fSpecies.value = speciesId;
+  if(photo){
+    scanPhotoPreviewEl.src = photo;
+    scanPhotoPreviewEl.style.display = 'block';
+  }
+  openSheet(addSheet);
+}
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{
