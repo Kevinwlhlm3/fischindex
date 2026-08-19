@@ -60,6 +60,12 @@
   .nav-item span{ font-size:11px; font-weight:600; }
   .nav-item.active{ color:var(--amber); }
 
+  .type-opt{
+    flex:1; font-family:'Space Mono',monospace; font-size:11px; padding:10px 6px; border-radius:10px;
+    border:1px solid var(--line); background:rgba(244,238,221,0.05); color:rgba(244,238,221,0.65); cursor:pointer;
+  }
+  .type-opt.active{ background:var(--amber); border-color:var(--amber); color:#2B1D02; font-weight:700; }
+
   /* ---------- contour watermark ---------- */
   .contours{
     position:absolute; top:0; left:0; right:0; height:340px; overflow:hidden; z-index:0; pointer-events:none;
@@ -310,6 +316,14 @@
         <p style="font-size:11.5px; color:rgba(244,238,221,0.5); margin:0;" id="memberSince">Mitglied seit heute</p>
       </div>
 
+      <p class="eyebrow" style="margin:22px 0 8px;">Dein Angeltyp</p>
+      <div style="display:flex; gap:8px;">
+        <button class="type-opt" data-type="raub">Raubfisch</button>
+        <button class="type-opt" data-type="fried">Friedfisch</button>
+        <button class="type-opt" data-type="allrounder">Allrounder</button>
+      </div>
+      <p style="font-size:11px; color:rgba(244,238,221,0.45); margin:8px 0 0;">Bestimmt, welcher Reiter im Index zuerst aufgeht.</p>
+
       <p class="eyebrow" style="margin:22px 0 8px;">Statistik</p>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
         <div class="progress-card" style="flex-direction:column; align-items:flex-start; gap:2px; padding:14px 16px;">
@@ -372,9 +386,36 @@
 
   <label for="fWater">Gewässer</label>
   <input id="fWater" type="text" placeholder="z. B. Werrasee" />
+  <p id="waterNote" style="display:none; font-size:11.5px; color:var(--teal-soft); background:rgba(79,167,156,0.12); border-radius:8px; padding:8px 10px; margin:6px 0 0;"></p>
 
-  <label for="fDate">Datum</label>
-  <input id="fDate" type="date" />
+  <div class="row2">
+    <div>
+      <label for="fDate">Datum</label>
+      <input id="fDate" type="date" />
+    </div>
+    <div>
+      <label for="fTime">Uhrzeit</label>
+      <input id="fTime" type="time" />
+    </div>
+  </div>
+
+  <label>Wetter</label>
+  <div style="display:flex; gap:8px;">
+    <button type="button" class="type-opt weather-opt" data-w="sonnig">☀️ Sonnig</button>
+    <button type="button" class="type-opt weather-opt" data-w="bewoelkt">☁️ Bewölkt</button>
+    <button type="button" class="type-opt weather-opt" data-w="regen">🌧️ Regen</button>
+  </div>
+
+  <label for="fPressure">Luftdruck-Trend</label>
+  <select id="fPressure">
+    <option value="">— nicht angegeben —</option>
+    <option value="steigend">Steigend</option>
+    <option value="stabil">Stabil</option>
+    <option value="fallend">Fallend</option>
+  </select>
+
+  <label for="fGewaesserNote" style="margin-top:18px;">Schonzeiten/Mindestmaße für dieses Gewässer (optional)</label>
+  <input id="fGewaesserNote" type="text" placeholder="z. B. Hecht ganzjährig geschont, Verein XY" />
 
   <button class="save-btn" id="saveCatch">Fang speichern</button>
   <button class="cancel-btn" id="cancelAdd">Abbrechen</button>
@@ -420,6 +461,17 @@ const SPECIES = [
   {id:"barbe", name:"Barbe", latin:"Barbus barbus", cat:"fried"},
   {id:"nase", name:"Nase", latin:"Chondrostoma nasus", cat:"fried"},
   {id:"kaulbarsch", name:"Kaulbarsch", latin:"Gymnocephalus cernua", cat:"fried"},
+  {id:"karausche", name:"Karausche", latin:"Carassius carassius", cat:"fried"},
+  {id:"guester", name:"Güster", latin:"Blicca bjoerkna", cat:"fried"},
+  {id:"zope", name:"Zope", latin:"Ballerus ballerus", cat:"fried"},
+  {id:"ukelei", name:"Ukelei", latin:"Alburnus alburnus", cat:"fried"},
+  {id:"hasel", name:"Hasel", latin:"Leuciscus leuciscus", cat:"fried"},
+  {id:"elritze", name:"Elritze", latin:"Phoxinus phoxinus", cat:"fried"},
+  {id:"bitterling", name:"Bitterling", latin:"Rhodeus amarus", cat:"fried"},
+  {id:"moderlieschen", name:"Moderlieschen", latin:"Leucaspius delineatus", cat:"fried"},
+  {id:"bachschmerle", name:"Bachschmerle", latin:"Barbatula barbatula", cat:"fried"},
+  {id:"groppe", name:"Groppe", latin:"Cottus gobio", cat:"fried"},
+  {id:"steinbeisser", name:"Steinbeißer", latin:"Cobitis taenia", cat:"fried"},
   {id:"regenbogenforelle", name:"Regenbogenforelle", latin:"Oncorhynchus mykiss", cat:"wander"},
   {id:"bachforelle", name:"Bachforelle", latin:"Salmo trutta fario", cat:"wander"},
   {id:"seeforelle", name:"Seeforelle", latin:"Salmo trutta lacustris", cat:"wander"},
@@ -427,15 +479,29 @@ const SPECIES = [
   {id:"lachs", name:"Lachs", latin:"Salmo salar", cat:"wander"},
   {id:"aesche", name:"Äsche", latin:"Thymallus thymallus", cat:"wander"},
   {id:"quappe", name:"Quappe", latin:"Lota lota", cat:"wander"},
+  {id:"dorsch", name:"Dorsch", latin:"Gadus morhua", cat:"meer"},
+  {id:"hering", name:"Hering", latin:"Clupea harengus", cat:"meer"},
+  {id:"scholle", name:"Scholle", latin:"Pleuronectes platessa", cat:"meer"},
+  {id:"flunder", name:"Flunder", latin:"Platichthys flesus", cat:"meer"},
+  {id:"hornhecht", name:"Hornhecht", latin:"Belone belone", cat:"meer"},
 ];
-const CAT_LABEL = {raub:"Raubfisch", fried:"Friedfisch", wander:"Wanderfisch"};
-const CAT_COLOR = {raub:"#D96E4A", fried:"#4FA79C", wander:"#8E7FD1"};
+const CAT_LABEL = {raub:"Raubfisch", fried:"Friedfisch", wander:"Wanderfisch", meer:"Meeresfisch"};
+const CAT_COLOR = {raub:"#D96E4A", fried:"#4FA79C", wander:"#8E7FD1", meer:"#4A8FD9"};
+/* Welche Kategorien passen zu welchem Angler-Typ (steuert den Standard-Reiter im Index) */
+const TYPE_DEFAULT_TAB = { raub:"raub", fried:"fried", allrounder:"all" };
 
 /* ---------------- state ---------------- */
 const STORE_KEY = "fischindex_catches_v1";
 let catches = [];
 try { catches = JSON.parse(localStorage.getItem(STORE_KEY)) || []; } catch(e){ catches = []; }
-let activeTab = "all";
+
+const PROFILE_KEY = "fischindex_profile_v1";
+let profile = {};
+try { profile = JSON.parse(localStorage.getItem(PROFILE_KEY)) || {}; } catch(e){ profile = {}; }
+if(!profile.since) profile.since = new Date().toISOString();
+localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+
+let activeTab = TYPE_DEFAULT_TAB[profile.type] || "all";
 
 function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(catches)); }
 
@@ -473,7 +539,7 @@ function ghostFishSvg(){
 }
 
 /* ---------------- render tabs ---------------- */
-const TABS = [["all","Alle"],["raub","Raubfisch"],["fried","Friedfisch"],["wander","Wanderfisch"]];
+const TABS = [["all","Alle"],["raub","Raubfisch"],["fried","Friedfisch"],["wander","Wanderfisch"],["meer","Meeresfisch"]];
 function renderTabs(){
   const el = document.getElementById('tabs');
   el.innerHTML = TABS.map(([id,label]) =>
@@ -529,7 +595,46 @@ const addSheet = document.getElementById('addSheet');
 const detailSheet = document.getElementById('detailSheet');
 const fSpecies = document.getElementById('fSpecies');
 fSpecies.innerHTML = SPECIES.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
-document.getElementById('fDate').valueAsDate = new Date();
+
+function setNowDefaults(){
+  const now = new Date();
+  document.getElementById('fDate').valueAsDate = now;
+  document.getElementById('fTime').value = now.toTimeString().slice(0,5);
+}
+setNowDefaults();
+
+/* Gewässerspezifische Schonzeiten/Mindestmaße statt nur pauschal nach Bundesland */
+const GEWAESSER_KEY = "fischindex_gewaesser_notes_v1";
+let gewaesserNotes = {};
+try { gewaesserNotes = JSON.parse(localStorage.getItem(GEWAESSER_KEY)) || {}; } catch(e){ gewaesserNotes = {}; }
+function normWater(w){ return (w||'').trim().toLowerCase(); }
+
+const fWater = document.getElementById('fWater');
+const fGewaesserNote = document.getElementById('fGewaesserNote');
+const waterNoteEl = document.getElementById('waterNote');
+fWater.addEventListener('input', ()=>{
+  const key = normWater(fWater.value);
+  const existing = key && gewaesserNotes[key];
+  if(existing){
+    waterNoteEl.style.display = 'block';
+    waterNoteEl.textContent = '📍 ' + existing;
+    fGewaesserNote.value = existing;
+  } else {
+    waterNoteEl.style.display = 'none';
+    fGewaesserNote.value = '';
+  }
+});
+
+/* Wetter-Schnellauswahl */
+let selectedWeather = null;
+document.querySelectorAll('.weather-opt').forEach(btn=>{
+  btn.onclick = ()=>{
+    selectedWeather = (selectedWeather === btn.dataset.w) ? null : btn.dataset.w;
+    document.querySelectorAll('.weather-opt').forEach(b=> b.classList.toggle('active', b.dataset.w===selectedWeather));
+  };
+});
+const WEATHER_LABEL = { sonnig:'☀️ Sonnig', bewoelkt:'☁️ Bewölkt', regen:'🌧️ Regen' };
+const PRESSURE_LABEL = { steigend:'Luftdruck steigend', stabil:'Luftdruck stabil', fallend:'Luftdruck fallend' };
 
 function openSheet(sheet){
   backdrop.classList.add('open');
@@ -541,7 +646,7 @@ function closeSheets(){
   detailSheet.classList.remove('open');
 }
 backdrop.onclick = closeSheets;
-document.getElementById('openAdd').onclick = ()=> openSheet(addSheet);
+document.getElementById('openAdd').onclick = ()=>{ setNowDefaults(); openSheet(addSheet); };
 document.getElementById('cancelAdd').onclick = closeSheets;
 document.getElementById('closeDetail').onclick = closeSheets;
 
@@ -556,13 +661,18 @@ document.getElementById('saveCatch').onclick = ()=>{
   const speciesId = fSpecies.value;
   const length = parseFloat(document.getElementById('fLength').value);
   const weight = parseFloat(document.getElementById('fWeight').value) || null;
-  const water = document.getElementById('fWater').value.trim();
+  const water = fWater.value.trim();
   const date = document.getElementById('fDate').value || new Date().toISOString();
+  const time = document.getElementById('fTime').value || null;
+  const pressure = document.getElementById('fPressure').value || null;
+  const gNote = fGewaesserNote.value.trim();
 
   if(!length){ showToast('Bitte eine Länge eintragen'); return; }
 
+  if(water && gNote){ gewaesserNotes[normWater(water)] = gNote; localStorage.setItem(GEWAESSER_KEY, JSON.stringify(gewaesserNotes)); }
+
   const prevPb = pbFor(speciesId);
-  catches.push({ id: Date.now().toString(), speciesId, length, weight, water, date });
+  catches.push({ id: Date.now().toString(), speciesId, length, weight, water, date, time, weather: selectedWeather, pressure });
   save();
 
   const sp = SPECIES.find(s=>s.id===speciesId);
@@ -572,12 +682,26 @@ document.getElementById('saveCatch').onclick = ()=>{
 
   document.getElementById('fLength').value = '';
   document.getElementById('fWeight').value = '';
-  document.getElementById('fWater').value = '';
+  fWater.value = '';
+  fGewaesserNote.value = '';
+  waterNoteEl.style.display = 'none';
+  document.getElementById('fPressure').value = '';
+  selectedWeather = null;
+  document.querySelectorAll('.weather-opt').forEach(b=> b.classList.remove('active'));
   closeSheets();
   renderGrid();
 };
 
 /* ---------------- detail sheet ---------------- */
+function catchMeta(c){
+  const parts = [];
+  parts.push(fmtDate(c.date) + (c.time ? ', ' + c.time + ' Uhr' : ''));
+  if(c.weight) parts.push(c.weight+' kg');
+  if(c.weather) parts.push(WEATHER_LABEL[c.weather] || c.weather);
+  if(c.pressure) parts.push(PRESSURE_LABEL[c.pressure] || c.pressure);
+  return parts.join(' · ');
+}
+
 function openDetail(speciesId){
   const s = SPECIES.find(x=>x.id===speciesId);
   const pb = pbFor(speciesId);
@@ -592,13 +716,13 @@ function openDetail(speciesId){
         <p class="sheet-sub" style="margin:0;">${s.latin}</p>
       </div>
     </div>
-    ${pb ? `<div class="stamp">★ Bestwert ${pb.length} cm</div>` : `<p class="empty-note">Diese Art wartet noch auf ihren ersten Eintrag.</p>`}
+    ${pb ? `<div class="stamp">★ Bestwert ${pb.length} cm</div><p style="font-size:11.5px; color:var(--ink-soft); margin:6px 0 0;">${catchMeta(pb)}</p>` : `<p class="empty-note">Diese Art wartet noch auf ihren ersten Eintrag.</p>`}
     <div class="catch-list">
       ${hist.length ? hist.map(c=>`
         <div class="catch-item">
           <div>
             <p class="l">${c.water || 'Unbekanntes Gewässer'}</p>
-            <p class="w">${fmtDate(c.date)}${c.weight ? ' · '+c.weight+' kg' : ''}</p>
+            <p class="w">${catchMeta(c)}</p>
           </div>
           <div class="r"><p class="val">${c.length} cm</p></div>
         </div>
@@ -613,12 +737,6 @@ renderTabs();
 renderGrid();
 
 /* ---------------- profile ---------------- */
-const PROFILE_KEY = "fischindex_profile_v1";
-let profile = {};
-try { profile = JSON.parse(localStorage.getItem(PROFILE_KEY)) || {}; } catch(e){ profile = {}; }
-if(!profile.since) profile.since = new Date().toISOString();
-localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-
 function renderProfile(){
   const nameInput = document.getElementById('profileName');
   nameInput.value = profile.name || '';
@@ -626,12 +744,23 @@ function renderProfile(){
   document.getElementById('memberSince').textContent = 'Mitglied seit ' + fmtDate(profile.since);
   document.getElementById('statTotal').textContent = catches.length;
   document.getElementById('statSpecies').textContent = `${SPECIES.filter(s=>pbFor(s.id)).length}/${SPECIES.length}`;
+  document.querySelectorAll('.type-opt').forEach(b=> b.classList.toggle('active', b.dataset.type === (profile.type||'allrounder')));
 }
 document.getElementById('profileName').addEventListener('input', (e)=>{
   profile.name = e.target.value;
   localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
   document.getElementById('avatarInitial').textContent = (profile.name || '?').trim().charAt(0).toUpperCase() || '?';
 });
+document.querySelectorAll('.type-opt').forEach(btn=>{
+  btn.onclick = ()=>{
+    profile.type = btn.dataset.type;
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+    document.querySelectorAll('.type-opt').forEach(b=> b.classList.toggle('active', b===btn));
+    activeTab = TYPE_DEFAULT_TAB[profile.type] || 'all';
+    renderTabs(); renderGrid();
+  };
+});
+
 
 /* ---------------- view switching ---------------- */
 const viewIndex = document.getElementById('viewIndex');
