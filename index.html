@@ -66,23 +66,6 @@
   }
   .type-opt.active{ background:var(--amber); border-color:var(--amber); color:#2B1D02; font-weight:700; }
 
-  .candidate{
-    display:flex; align-items:center; gap:12px; background:var(--surface); color:var(--ink);
-    border-radius:var(--radius-md); padding:12px 13px; margin-bottom:9px; cursor:pointer;
-    border:1.5px solid transparent; transition:border-color .15s ease;
-  }
-  .candidate:active{ border-color:var(--amber); }
-  .candidate .glyph-sm{
-    width:38px; height:38px; border-radius:10px; background:var(--surface-dim); flex-shrink:0;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .candidate .glyph-sm svg{ width:60%; height:60%; }
-  .candidate .info{ flex:1; min-width:0; }
-  .candidate .info .n{ font-family:'Fraunces',serif; font-weight:600; font-size:14px; margin:0 0 5px; }
-  .candidate .bar-bg{ height:5px; background:rgba(0,0,0,0.08); border-radius:99px; overflow:hidden; }
-  .candidate .bar-fg{ height:100%; background:var(--teal); border-radius:99px; }
-  .candidate .pct{ font-family:'Space Mono',monospace; font-size:13px; font-weight:700; flex-shrink:0; }
-
   /* ---------- contour watermark ---------- */
   .contours{
     position:absolute; top:0; left:0; right:0; height:340px; overflow:hidden; z-index:0; pointer-events:none;
@@ -361,44 +344,6 @@
     </div>
   </div>
 
-  <div id="viewScan" style="display:none;">
-    <header>
-      <p class="eyebrow">Fischindex · Feldjournal</p>
-      <h1>Fisch erkennen</h1>
-      <p class="sub">Foto machen, Art vorschlagen lassen, direkt in den Index übernehmen.</p>
-    </header>
-
-    <div style="position:relative; z-index:1; padding:4px 22px 20px;">
-
-      <div id="scanIdle">
-        <label for="scanInput" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; border:1.5px dashed var(--line); border-radius:var(--radius-lg); padding:38px 20px; cursor:pointer; background:rgba(244,238,221,0.04);">
-          <div style="width:52px; height:52px; border-radius:50%; background:var(--teal-soft); display:flex; align-items:center; justify-content:center;">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#F4EEDD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M20 8V6a2 2 0 0 0-2-2h-2M4 16v2a2 2 0 0 0 2 2h2M20 16v2a2 2 0 0 1-2 2h-2"/><circle cx="12" cy="12" r="3.4"/></svg>
-          </div>
-          <p style="font-size:14px; font-weight:600; margin:0;">Foto aufnehmen oder auswählen</p>
-          <p style="font-size:12px; color:rgba(244,238,221,0.5); margin:0;">Am besten den ganzen Fisch von der Seite</p>
-        </label>
-        <input id="scanInput" type="file" accept="image/*" capture="environment" style="display:none;" />
-        <p style="font-size:11px; color:rgba(244,238,221,0.4); margin:14px 2px 0; text-align:center;">Prototyp-Hinweis: Die Erkennung ist hier simuliert, um den Ablauf zu testen — keine echte KI-Analyse.</p>
-      </div>
-
-      <div id="scanLoading" style="display:none; flex-direction:column; align-items:center; padding:30px 0;">
-        <img id="scanPreviewLoading" style="width:160px; height:160px; object-fit:cover; border-radius:var(--radius-lg); margin-bottom:16px;" />
-        <p style="font-size:13.5px; color:rgba(244,238,221,0.7); margin:0;" id="scanLoadingText">Analysiere Foto…</p>
-      </div>
-
-      <div id="scanResult" style="display:none;">
-        <div style="display:flex; justify-content:center; margin-bottom:16px;">
-          <img id="scanPreviewResult" style="width:130px; height:130px; object-fit:cover; border-radius:var(--radius-lg);" />
-        </div>
-        <p class="eyebrow" style="margin:0 0 10px;">Mögliche Arten</p>
-        <div id="scanCandidates"></div>
-        <button class="cancel-btn" id="scanManual" style="margin-top:6px;">Kein Treffer dabei? Art manuell wählen</button>
-        <button class="cancel-btn" id="scanRetry">Neues Foto</button>
-      </div>
-
-    </div>
-  </div>
 
 </div>
 
@@ -406,10 +351,6 @@
   <button class="nav-item active" data-view="index">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
     <span>Index</span>
-  </button>
-  <button class="nav-item" data-view="scan">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M20 8V6a2 2 0 0 0-2-2h-2M4 16v2a2 2 0 0 0 2 2h2M20 16v2a2 2 0 0 1-2 2h-2"/><circle cx="12" cy="12" r="3.4"/></svg>
-    <span>Erkennen</span>
   </button>
   <button class="nav-item" data-view="profil">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
@@ -429,7 +370,6 @@
   <div class="sheet-handle"></div>
   <h2>Neuer Fang</h2>
   <p class="sheet-sub">Trag ein, was heute angebissen hat.</p>
-  <img id="scanPhotoPreviewEl" style="display:none; width:100%; max-height:160px; object-fit:cover; border-radius:var(--radius-md); margin-bottom:14px;" />
 
   <label for="fSpecies">Fischart</label>
   <select id="fSpecies"></select>
@@ -505,46 +445,46 @@
 <script>
 /* ---------------- data ---------------- */
 const SPECIES = [
-  {id:"hecht", name:"Hecht", latin:"Esox lucius", cat:"raub"},
-  {id:"zander", name:"Zander", latin:"Sander lucioperca", cat:"raub"},
-  {id:"barsch", name:"Flussbarsch", latin:"Perca fluviatilis", cat:"raub"},
-  {id:"wels", name:"Wels", latin:"Silurus glanis", cat:"raub"},
-  {id:"rapfen", name:"Rapfen", latin:"Leuciscus aspius", cat:"raub"},
-  {id:"aal", name:"Aal", latin:"Anguilla anguilla", cat:"raub"},
-  {id:"karpfen", name:"Karpfen", latin:"Cyprinus carpio", cat:"fried"},
-  {id:"schleie", name:"Schleie", latin:"Tinca tinca", cat:"fried"},
-  {id:"rotauge", name:"Rotauge", latin:"Rutilus rutilus", cat:"fried"},
-  {id:"rotfeder", name:"Rotfeder", latin:"Scardinius erythrophthalmus", cat:"fried"},
-  {id:"brasse", name:"Brasse", latin:"Abramis brama", cat:"fried"},
-  {id:"doebel", name:"Döbel", latin:"Squalius cephalus", cat:"fried"},
-  {id:"aland", name:"Aland", latin:"Leuciscus idus", cat:"fried"},
-  {id:"giebel", name:"Giebel", latin:"Carassius gibelio", cat:"fried"},
-  {id:"barbe", name:"Barbe", latin:"Barbus barbus", cat:"fried"},
-  {id:"nase", name:"Nase", latin:"Chondrostoma nasus", cat:"fried"},
-  {id:"kaulbarsch", name:"Kaulbarsch", latin:"Gymnocephalus cernua", cat:"fried"},
-  {id:"karausche", name:"Karausche", latin:"Carassius carassius", cat:"fried"},
-  {id:"guester", name:"Güster", latin:"Blicca bjoerkna", cat:"fried"},
-  {id:"zope", name:"Zope", latin:"Ballerus ballerus", cat:"fried"},
-  {id:"ukelei", name:"Ukelei", latin:"Alburnus alburnus", cat:"fried"},
-  {id:"hasel", name:"Hasel", latin:"Leuciscus leuciscus", cat:"fried"},
-  {id:"elritze", name:"Elritze", latin:"Phoxinus phoxinus", cat:"fried"},
-  {id:"bitterling", name:"Bitterling", latin:"Rhodeus amarus", cat:"fried"},
-  {id:"moderlieschen", name:"Moderlieschen", latin:"Leucaspius delineatus", cat:"fried"},
-  {id:"bachschmerle", name:"Bachschmerle", latin:"Barbatula barbatula", cat:"fried"},
-  {id:"groppe", name:"Groppe", latin:"Cottus gobio", cat:"fried"},
-  {id:"steinbeisser", name:"Steinbeißer", latin:"Cobitis taenia", cat:"fried"},
-  {id:"regenbogenforelle", name:"Regenbogenforelle", latin:"Oncorhynchus mykiss", cat:"wander"},
-  {id:"bachforelle", name:"Bachforelle", latin:"Salmo trutta fario", cat:"wander"},
-  {id:"seeforelle", name:"Seeforelle", latin:"Salmo trutta lacustris", cat:"wander"},
-  {id:"meerforelle", name:"Meerforelle", latin:"Salmo trutta trutta", cat:"wander"},
-  {id:"lachs", name:"Lachs", latin:"Salmo salar", cat:"wander"},
-  {id:"aesche", name:"Äsche", latin:"Thymallus thymallus", cat:"wander"},
-  {id:"quappe", name:"Quappe", latin:"Lota lota", cat:"wander"},
-  {id:"dorsch", name:"Dorsch", latin:"Gadus morhua", cat:"meer"},
-  {id:"hering", name:"Hering", latin:"Clupea harengus", cat:"meer"},
-  {id:"scholle", name:"Scholle", latin:"Pleuronectes platessa", cat:"meer"},
-  {id:"flunder", name:"Flunder", latin:"Platichthys flesus", cat:"meer"},
-  {id:"hornhecht", name:"Hornhecht", latin:"Belone belone", cat:"meer"},
+  {id:"hecht", name:"Hecht", latin:"Esox lucius", cat:"raub", desc:"Lauerjäger mit langgestrecktem Körper und entenschnabelartigem Maul voller Zähne. Steht bevorzugt reglos an Krautkanten und Strukturen, um Beute im Kurzstart zu attackieren. Kann über 1 m lang werden und zählt zu den beliebtesten Zielfischen am Raubfischgewässer."},
+  {id:"zander", name:"Zander", latin:"Sander lucioperca", cat:"raub", desc:"Dämmerungs- und nachtaktiver Räuber mit großen, lichtempfindlichen Augen, die ihn im Trüben und bei wenig Licht überlegen jagen lassen. Hält sich oft an Kanten, Buhnen und tiefen Rinnen auf. Gilt als einer der schmackhaftesten heimischen Speisefische."},
+  {id:"barsch", name:"Flussbarsch", latin:"Perca fluviatilis", cat:"raub", desc:"Gestreifter Schwarmjäger, der oft in kleinen Trupps Kleinfische treibt und an der Wasseroberfläche jagt. Weit verbreitet und meist recht bissfreudig, dadurch ein guter Einstiegsfisch für Raubfischangler. Die Rückenflosse mit den harten Stachelstrahlen ist ein sicheres Erkennungsmerkmal."},
+  {id:"wels", name:"Wels", latin:"Silurus glanis", cat:"raub", desc:"Größter heimischer Süßwasserfisch, kann deutlich über 2 m Länge erreichen. Nachtaktiv, orientiert sich stark über die langen Barteln am Maul statt über die Augen. Steht meist in tiefen Löchern und unter Strukturen, zieht nachts zur Jagd in die Flachwasserzonen."},
+  {id:"rapfen", name:"Rapfen", latin:"Leuciscus aspius", cat:"raub", desc:"Einziger reiner Raubfisch unter den heimischen Weißfischen, jagt oft spektakulär an der Oberfläche auf Kleinfischschwärme. Bevorzugt strömungsreiche Flussabschnitte und ist für seine schnellen, kraftvollen Fluchten bekannt."},
+  {id:"aal", name:"Aal", latin:"Anguilla anguilla", cat:"raub", desc:"Schlangenförmiger Wanderfisch mit einem der ungewöhnlichsten Lebenszyklen: Laicht in der Sargassosee im Atlantik, die Jungfische wandern über Jahre bis in europäische Binnengewässer. Dämmerungs- und nachtaktiv, gilt als anspruchsvoll zu fangen und ist streng geschützt/reguliert."},
+  {id:"karpfen", name:"Karpfen", latin:"Cyprinus carpio", cat:"fried", desc:"Robuster, genügsamer Kulturfisch mit charakteristischen Bartfäden am Maul. In vielen Zuchtformen verbreitet (Schuppen-, Spiegel-, Lederkarpfen). Wird von vielen Anglern gezielt mit Boilies und Method-Feeder-Montagen beangelt, kann viele Jahrzehnte alt werden."},
+  {id:"schleie", name:"Schleie", latin:"Tinca tinca", cat:"fried", desc:"Bodenorientierter Fisch mit dickem, schleimigem Schuppenkleid und kleinen, tief liegenden Augen. Bevorzugt krautreiche, ruhige Gewässer mit weichem Grund und ist in der Dämmerung besonders aktiv."},
+  {id:"rotauge", name:"Rotauge", latin:"Rutilus rutilus", cat:"fried", desc:"Einer der häufigsten heimischen Weißfische, erkennbar an den namensgebenden roten Augen und roten Flossenansätzen. Bildet oft große Schwärme und ist ein wichtiger Futterfisch für Raubfische."},
+  {id:"rotfeder", name:"Rotfeder", latin:"Scardinius erythrophthalmus", cat:"fried", desc:"Dem Rotauge ähnlich, aber mit rötlicheren Flossen und einer weiter nach hinten versetzten Rückenflosse. Hält sich gern oberflächennah in Pflanzenzonen stehender Gewässer auf."},
+  {id:"brasse", name:"Brasse", latin:"Abramis brama", cat:"fried", desc:"Hochrückiger, seitlich stark abgeflachter Weißfisch, der in Schwärmen den Gewässergrund nach Kleintieren absucht. Typisch sind die beim Fressen aufsteigenden Schlammwolken und Luftblasen."},
+  {id:"doebel", name:"Döbel", latin:"Squalius cephalus", cat:"fried", desc:"Kräftiger, breitköpfiger Weißfisch, der im Gegensatz zu vielen Verwandten auch größere Beute wie Insekten, Krebse und kleine Fische frisst. Steht gern an Strömungskanten und unter überhängender Vegetation."},
+  {id:"aland", name:"Aland", latin:"Leuciscus idus", cat:"fried", desc:"Schlanker, silbrig glänzender Schwarmfisch, oft in Fluss-Mündungsbereichen und langsam fließenden Gewässern anzutreffen. In der Zierfischzucht als Goldorfe bekannt, in freier Wildbahn silbrig gefärbt."},
+  {id:"giebel", name:"Giebel", latin:"Carassius gibelio", cat:"fried", desc:"Sehr anpassungsfähiger, dem Karpfen ähnlicher Fisch, der auch sauerstoffarme und stark verkrautete Gewässer besiedelt. Eingeschleppte Art, die sich in Deutschland stark ausgebreitet hat."},
+  {id:"barbe", name:"Barbe", latin:"Barbus barbus", cat:"fried", desc:"Strömungsliebender Grundfisch mit vier charakteristischen Bartfäden am Maul, mit denen er den Kies- und Sandgrund nach Nahrung absucht. Bevorzugt sauerstoffreiche, klare Flussabschnitte."},
+  {id:"nase", name:"Nase", latin:"Chondrostoma nasus", cat:"fried", desc:"Erkennbar an der unterständigen, hornartigen Maulöffnung, mit der sie den Algenbewuchs von Steinen abraspelt. Bildet zur Laichzeit im Frühjahr oft beeindruckende Schwarmwanderungen in Flüssen."},
+  {id:"kaulbarsch", name:"Kaulbarsch", latin:"Gymnocephalus cernua", cat:"fried", desc:"Kleiner, stachelbewehrter Verwandter des Flussbarschs mit dunkel gesprenkelter Zeichnung. Hält sich oft grundnah in tieferen, ruhigeren Gewässerabschnitten auf."},
+  {id:"karausche", name:"Karausche", latin:"Carassius carassius", cat:"fried", desc:"Robuster, hochrückiger Kleinfisch, sehr tolerant gegenüber sauerstoffarmem Wasser und kleinen, verkrauteten Teichen. Gilt in reiner Form als selten geworden, da sie sich leicht mit dem eingeschleppten Giebel kreuzt."},
+  {id:"guester", name:"Güster", latin:"Blicca bjoerkna", cat:"fried", desc:"Der kleineren Brasse zum Verwechseln ähnlich, unterscheidet sich vor allem durch größere Augen und eine etwas andere Flossenfärbung. Häufiger Beifang beim gezielten Brassenangeln."},
+  {id:"zope", name:"Zope", latin:"Ballerus ballerus", cat:"fried", desc:"Schlanker, silbriger Schwarmfisch größerer Flüsse und Seen, der bevorzugt im Freiwasser nach Plankton und Kleintieren jagt. Deutlich seltener als Brasse oder Rotauge."},
+  {id:"ukelei", name:"Ukelei", latin:"Alburnus alburnus", cat:"fried", desc:"Kleiner, sehr aktiver Schwarmfisch, der nahe der Oberfläche nach Insekten schnappt. Häufig der erste Fisch, den Angler-Anfänger fangen, da er praktisch überall vorkommt und leicht beißt."},
+  {id:"hasel", name:"Hasel", latin:"Leuciscus leuciscus", cat:"fried", desc:"Schlanker Schwarmfisch strömungsreicher Bäche und Flüsse, dem Döbel ähnlich, aber deutlich kleiner und schmaler gebaut. Frisst überwiegend Insekten und kleine wirbellose Tiere."},
+  {id:"elritze", name:"Elritze", latin:"Phoxinus phoxinus", cat:"fried", desc:"Winziger, bunt gefärbter Bachfisch, der als Zeigerart für saubere, sauerstoffreiche Gewässer gilt. Lebt in großen Schwärmen in kühlen Bächen und Oberläufen."},
+  {id:"bitterling", name:"Bitterling", latin:"Rhodeus amarus", cat:"fried", desc:"Kleinfisch mit einer der ungewöhnlichsten Fortpflanzungsstrategien Europas: Das Weibchen legt die Eier über einer Legeröhre direkt in lebende Großmuscheln ab. Steht unter Naturschutz."},
+  {id:"moderlieschen", name:"Moderlieschen", latin:"Leucaspius delineatus", cat:"fried", desc:"Sehr kleiner, robuster Schwarmfisch, der auch flache, pflanzenreiche und zeitweise austrocknende Kleingewässer besiedelt. In vielen Bundesländern als gefährdet eingestuft."},
+  {id:"bachschmerle", name:"Bachschmerle", latin:"Barbatula barbatula", cat:"fried", desc:"Kleiner, bartelbewehrter Grundfisch klarer Bäche, der sich tagsüber meist unter Steinen versteckt. Zeigt wie die Elritze eine gute Gewässerqualität an."},
+  {id:"groppe", name:"Groppe", latin:"Cottus gobio", cat:"fried", desc:"Grundlebender, kopflastiger Fisch ohne Schwimmblase, der sich sprungartig über den Gewässergrund bewegt. Bevorzugt kühle, sauerstoffreiche Bäche mit steinigem Untergrund und steht unter Schutz."},
+  {id:"steinbeisser", name:"Steinbeißer", latin:"Cobitis taenia", cat:"fried", desc:"Schlangenförmiger, bodenlebender Kleinfisch mit charakteristischer dunkler Fleckenzeichnung. Gräbt sich tagsüber gerne im Sand ein und ist streng geschützt."},
+  {id:"regenbogenforelle", name:"Regenbogenforelle", latin:"Oncorhynchus mykiss", cat:"wander", desc:"Ursprünglich aus Nordamerika stammende, in Europa vielfach besetzte Forellenart mit typisch rosa-violettem Seitenband. In Deutschland überwiegend in Angelteichen und besetzten Gewässern anzutreffen."},
+  {id:"bachforelle", name:"Bachforelle", latin:"Salmo trutta fario", cat:"wander", desc:"Standorttreue Forellenform klarer, sauerstoffreicher Bäche mit rot-schwarz gepunkteter Flankenzeichnung. Gilt als Leitfisch intakter Fließgewässer und ist bei vielen Vereinen streng reglementiert."},
+  {id:"seeforelle", name:"Seeforelle", latin:"Salmo trutta lacustris", cat:"wander", desc:"Großwüchsige Form der Bachforelle, die im See heranwächst und zum Laichen in Zuflüsse aufsteigt. Kommt vor allem in tiefen, klaren Alpenrandseen vor."},
+  {id:"meerforelle", name:"Meerforelle", latin:"Salmo trutta trutta", cat:"wander", desc:"Wandert wie der Lachs ins Meer zum Wachsen und kehrt zum Laichen in die Geburtsflüsse zurück. An der Ostseeküste ein beliebter, meist mit der Spinnrute beangelter Zielfisch."},
+  {id:"lachs", name:"Lachs", latin:"Salmo salar", cat:"wander", desc:"Anadromer Wanderfisch, der im Meer heranwächst und für die Laichwanderung teils hunderte Kilometer flussaufwärts zurücklegt. In Deutschland durch Wiederansiedlungsprojekte in einigen Flüssen wieder vertreten, streng geschützt."},
+  {id:"aesche", name:"Äsche", latin:"Thymallus thymallus", cat:"wander", desc:"Elegante Fischart klarer, strömungsreicher Flüsse mit auffällig hoher, segelartiger Rückenflosse. Gilt als anspruchsvoller Anzeiger für gute Wasserqualität."},
+  {id:"quappe", name:"Quappe", latin:"Lota lota", cat:"wander", desc:"Einziger heimischer Süßwasser-Vertreter der Dorsch-Verwandtschaft, mit langgestrecktem Körper und einem einzelnen Kinnbartel. Laicht als einer der wenigen Fische im Winter und ist überwiegend nachtaktiv."},
+  {id:"dorsch", name:"Dorsch", latin:"Gadus morhua", cat:"meer", desc:"Die Ostsee-Population des Kabeljaus, erkennbar am Kinnbartel und der dreigeteilten Rückenflosse. Klassischer Zielfisch beim Bootsangeln und Brandungsangeln an Nord- und Ostsee, Bestände sind streng reguliert."},
+  {id:"hering", name:"Hering", latin:"Clupea harengus", cat:"meer", desc:"Kleiner, silbriger Schwarmfisch des offenen Meeres, der in riesigen Verbänden wandert. Wird traditionell mit Heringspaternostern gefangen, oft saisonal in großer Zahl an der Küste."},
+  {id:"scholle", name:"Scholle", latin:"Pleuronectes platessa", cat:"meer", desc:"Plattfisch, der auf der rechten Körperseite liegt und beide Augen auf der Oberseite trägt, erkennbar an den orangen Flecken. Lebt gut getarnt auf Sand- und Schlickböden des Meeresbodens."},
+  {id:"flunder", name:"Flunder", latin:"Platichthys flesus", cat:"meer", desc:"Salztolerantester heimischer Plattfisch, der sogar weit in Flussmündungen und Brackwasser vordringt. Von der Scholle durch die feinen Stachelreihen entlang der Seitenlinie zu unterscheiden."},
+  {id:"hornhecht", name:"Hornhecht", latin:"Belone belone", cat:"meer", desc:"Schlanker Oberflächenjäger mit langem, spitzem Schnabelmaul und auffällig grün gefärbten Gräten. Erscheint saisonal in großer Zahl in Küstennähe und ist ein beliebter Zielfisch beim leichten Spinnfischen."},
 ];
 const CAT_LABEL = {raub:"Raubfisch", fried:"Friedfisch", wander:"Wanderfisch", meer:"Meeresfisch"};
 const CAT_COLOR = {raub:"#D96E4A", fried:"#4FA79C", wander:"#8E7FD1", meer:"#4A8FD9"};
@@ -655,7 +595,6 @@ const backdrop = document.getElementById('backdrop');
 const addSheet = document.getElementById('addSheet');
 const detailSheet = document.getElementById('detailSheet');
 const fSpecies = document.getElementById('fSpecies');
-const scanPhotoPreviewEl = document.getElementById('scanPhotoPreviewEl');
 fSpecies.innerHTML = SPECIES.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
 
 function setNowDefaults(){
@@ -710,15 +649,9 @@ function closeSheets(){
 backdrop.onclick = closeSheets;
 document.getElementById('openAdd').onclick = ()=>{
   setNowDefaults();
-  pendingPhoto = null;
-  scanPhotoPreviewEl.style.display = 'none';
   openSheet(addSheet);
 };
-document.getElementById('cancelAdd').onclick = ()=>{
-  pendingPhoto = null;
-  scanPhotoPreviewEl.style.display = 'none';
-  closeSheets();
-};
+document.getElementById('cancelAdd').onclick = closeSheets;
 document.getElementById('closeDetail').onclick = closeSheets;
 
 function showToast(msg){
@@ -743,7 +676,7 @@ document.getElementById('saveCatch').onclick = ()=>{
   if(water && gNote){ gewaesserNotes[normWater(water)] = gNote; localStorage.setItem(GEWAESSER_KEY, JSON.stringify(gewaesserNotes)); }
 
   const prevPb = pbFor(speciesId);
-  catches.push({ id: Date.now().toString(), speciesId, length, weight, water, date, time, weather: selectedWeather, pressure, photo: pendingPhoto || null });
+  catches.push({ id: Date.now().toString(), speciesId, length, weight, water, date, time, weather: selectedWeather, pressure });
   save();
 
   const sp = SPECIES.find(s=>s.id===speciesId);
@@ -756,8 +689,6 @@ document.getElementById('saveCatch').onclick = ()=>{
   fWater.value = '';
   fGewaesserNote.value = '';
   waterNoteEl.style.display = 'none';
-  pendingPhoto = null;
-  scanPhotoPreviewEl.style.display = 'none';
   document.getElementById('fPressure').value = '';
   selectedWeather = null;
   document.querySelectorAll('.weather-opt').forEach(b=> b.classList.remove('active'));
@@ -789,11 +720,13 @@ function openDetail(speciesId){
         <p class="sheet-sub" style="margin:0;">${s.latin}</p>
       </div>
     </div>
-    ${pb ? `<div class="stamp">★ Bestwert ${pb.length} cm</div><p style="font-size:11.5px; color:var(--ink-soft); margin:6px 0 0;">${catchMeta(pb)}</p>` : `<p class="empty-note">Diese Art wartet noch auf ihren ersten Eintrag.</p>`}
+    ${pb
+      ? `<p style="font-size:13px; line-height:1.5; color:var(--ink); margin:14px 0 0;">${s.desc}</p>
+         <div class="stamp">★ Bestwert ${pb.length} cm</div><p style="font-size:11.5px; color:var(--ink-soft); margin:6px 0 0;">${catchMeta(pb)}</p>`
+      : `<p class="empty-note">Diese Art wartet noch auf ihren ersten Eintrag. Fang sie, um die Artbeschreibung freizuschalten.</p>`}
     <div class="catch-list">
       ${hist.length ? hist.map(c=>`
         <div class="catch-item">
-          ${c.photo ? `<img src="${c.photo}" style="width:38px; height:38px; object-fit:cover; border-radius:9px; margin-right:10px; flex-shrink:0;" />` : ''}
           <div style="flex:1; min-width:0;">
             <p class="l">${c.water || 'Unbekanntes Gewässer'}</p>
             <p class="w">${catchMeta(c)}</p>
@@ -839,7 +772,6 @@ document.querySelectorAll('.type-opt').forEach(btn=>{
 /* ---------------- view switching ---------------- */
 const viewIndex = document.getElementById('viewIndex');
 const viewProfil = document.getElementById('viewProfil');
-const viewScan = document.getElementById('viewScan');
 const fab = document.getElementById('openAdd');
 document.querySelectorAll('.nav-item').forEach(btn=>{
   btn.onclick = ()=>{
@@ -848,105 +780,11 @@ document.querySelectorAll('.nav-item').forEach(btn=>{
     const v = btn.dataset.view;
     viewIndex.style.display = v === 'index' ? '' : 'none';
     viewProfil.style.display = v === 'profil' ? '' : 'none';
-    viewScan.style.display = v === 'scan' ? '' : 'none';
     fab.style.display = v === 'index' ? '' : 'none';
     if(v === 'profil') renderProfile();
-    if(v === 'scan') resetScan();
     window.scrollTo(0,0);
   };
 });
-
-/* ---------------- AI-Erkennung (simuliert) ---------------- */
-const scanIdle = document.getElementById('scanIdle');
-const scanLoading = document.getElementById('scanLoading');
-const scanResult = document.getElementById('scanResult');
-const scanInput = document.getElementById('scanInput');
-let pendingPhoto = null; // compressed dataURL of the current/last scanned photo
-
-function resetScan(){
-  scanIdle.style.display = '';
-  scanLoading.style.display = 'none';
-  scanResult.style.display = 'none';
-  scanInput.value = '';
-}
-
-function compressImage(file, maxDim, quality){
-  return new Promise((resolve)=>{
-    const img = new Image();
-    const reader = new FileReader();
-    reader.onload = (e)=>{ img.src = e.target.result; };
-    img.onload = ()=>{
-      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
-      const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', quality));
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-function pickFakeCandidates(){
-  // Simulierte Erkennung: 3 zufällige Arten mit plausiblen, absteigenden Konfidenzwerten.
-  const shuffled = [...SPECIES].sort(()=> Math.random() - 0.5);
-  const picks = shuffled.slice(0, 3);
-  const confidences = [
-    62 + Math.floor(Math.random()*24), // 62–85%
-    8 + Math.floor(Math.random()*14),  // 8–21%
-    3 + Math.floor(Math.random()*8),   // 3–10%
-  ];
-  return picks.map((s,i)=> ({ species: s, confidence: confidences[i] }));
-}
-
-scanInput.addEventListener('change', async ()=>{
-  const file = scanInput.files[0];
-  if(!file) return;
-  pendingPhoto = await compressImage(file, 480, 0.65);
-
-  scanIdle.style.display = 'none';
-  scanLoading.style.display = 'flex';
-  document.getElementById('scanPreviewLoading').src = pendingPhoto;
-
-  setTimeout(()=>{
-    scanLoading.style.display = 'none';
-    scanResult.style.display = 'block';
-    document.getElementById('scanPreviewResult').src = pendingPhoto;
-
-    const candidates = pickFakeCandidates();
-    document.getElementById('scanCandidates').innerHTML = candidates.map(c=> `
-      <div class="candidate" data-species="${c.species.id}">
-        <div class="glyph-sm">${fishSvg(CAT_COLOR[c.species.cat])}</div>
-        <div class="info">
-          <p class="n">${c.species.name}</p>
-          <div class="bar-bg"><div class="bar-fg" style="width:${c.confidence}%"></div></div>
-        </div>
-        <span class="pct">${c.confidence}%</span>
-      </div>
-    `).join('');
-
-    document.querySelectorAll('.candidate').forEach(el=>{
-      el.onclick = ()=>{
-        openAddSheetWithSpecies(el.dataset.species, pendingPhoto);
-      };
-    });
-  }, 1400);
-});
-
-document.getElementById('scanRetry').onclick = resetScan;
-document.getElementById('scanManual').onclick = ()=>{
-  openAddSheetWithSpecies(null, pendingPhoto);
-};
-
-function openAddSheetWithSpecies(speciesId, photo){
-  setNowDefaults();
-  if(speciesId) fSpecies.value = speciesId;
-  if(photo){
-    scanPhotoPreviewEl.src = photo;
-    scanPhotoPreviewEl.style.display = 'block';
-  }
-  openSheet(addSheet);
-}
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{
